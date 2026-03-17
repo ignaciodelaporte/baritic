@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="PreAnest"/>
+<title>PreAnest</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#F0F4F8;--surface:#FFFFFF;--surface2:#F8FAFC;
+  --border:#E2E8F0;--border2:#CBD5E1;
+  --text:#1E293B;--text2:#64748B;--text3:#94A3B8;
+  --blue:#2563EB;--blue-dark:#1D4ED8;--blue-light:#EFF6FF;--blue-mid:#93C5FD;
+  --red:#DC2626;--red-light:#FEF2F2;--red-border:#FECACA;
+  --amber:#D97706;--amber-light:#FFFBEB;--amber-border:#FDE68A;
+  --green:#059669;--green-light:#ECFDF5;--green-border:#A7F3D0;
+  --r:10px;--rlg:16px;
+  --sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --sh2:0 4px 16px rgba(0,0,0,.08);
+}
+body{font-family:'Inter',-apple-system,sans-serif;font-size:15px;color:var(--text);background:var(--bg);min-height:100vh}
+
+.topbar{position:sticky;top:0;z-index:100;background:var(--blue);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(37,99,235,.4)}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;flex-shrink:0;border:1.5px solid rgba(255,255,255,.25)}
+.logo-name{font-size:17px;font-weight:700;color:#fff}
+.logo-sub{font-size:11px;color:rgba(255,255,255,.7);margin-top:1px}
+.badges{display:flex;gap:5px;flex-wrap:wrap}
+.badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25)}
+.badge.danger{background:#FEF2F2;color:#991B1B;border-color:#FECACA}
+.badge.warn{background:#FFFBEB;color:#92400E;border-color:#FDE68A}
+.badge.ok{background:#ECFDF5;color:#065F46;border-color:#A7F3D0}
+
+.tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);padding:0 8px;overflow-x:auto;-webkit-overflow-scrolling:touch;box-shadow:var(--sh)}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:13px 15px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;color:var(--text2);background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;margin-bottom:-1px;white-space:nowrap;transition:all .15s}
+.tab.active{border-bottom-color:var(--blue);color:var(--blue)}
+
+.content{max-width:680px;margin:0 auto;padding:16px 14px 64px}
+
+.section{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);margin-bottom:10px;overflow:hidden;box-shadow:var(--sh)}
+.sec-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;transition:background .1s}
+.sec-head:active{background:var(--surface2)}
+.sec-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:9px;color:var(--text)}
+.sec-icon{font-size:16px}
+.chev{width:20px;height:20px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text3);transition:transform .2s;flex-shrink:0}
+.chev.open{transform:rotate(180deg)}
+.sec-body{padding:14px 16px;border-top:1px solid var(--border)}
+
+.field{margin-bottom:13px}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:11px;font-weight:700;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
+.field-unit{font-weight:400;text-transform:none;font-size:10px}
+.field input,.field select,.field textarea{width:100%;font-size:15px;padding:11px 13px;border:1.5px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:inherit;transition:border-color .15s,box-shadow .15s;outline:none;-webkit-appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.field textarea{min-height:72px;resize:vertical;line-height:1.5}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394A3B8' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+
+.cb-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 8px;margin-top:6px}
+.cb-label{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text);cursor:pointer;padding:8px 10px;border-radius:var(--r);transition:background .1s;border:1px solid transparent}
+.cb-label:active{background:var(--surface2)}
+.cb-label.checked{background:var(--blue-light);border-color:var(--blue-mid)}
+.cb-box{width:22px;height:22px;flex-shrink:0;border:2px solid var(--border2);border-radius:6px;display:flex;align-items:center;justify-content:center;background:var(--surface);transition:all .12s}
+.cb-box.checked{background:var(--blue);border-color:var(--blue)}
+.cb-check{width:11px;height:7px;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(-45deg) translate(1px,-1px);display:none}
+.cb-box.checked .cb-check{display:block}
+
+.btn-primary{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;margin-top:14px;font-family:inherit;box-shadow:0 2px 8px rgba(37,99,235,.25);transition:all .15s;-webkit-appearance:none}
+.btn-primary:active{transform:scale(.98);background:var(--blue-dark)}
+.btn-outline{width:100%;padding:13px;background:var(--surface);color:var(--text2);border:1.5px solid var(--border2);border-radius:var(--r);font-size:15px;cursor:pointer;margin-top:10px;font-family:inherit;transition:all .15s;-webkit-appearance:none}
+.btn-outline:active{background:var(--surface2)}
+.btn-print{display:flex;justify-content:flex-end;margin-bottom:14px}
+.btn-print button{font-size:13px;font-weight:600;padding:8px 16px;border:1.5px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--text2);cursor:pointer;font-family:inherit;-webkit-appearance:none;transition:all .12s}
+
+.summary-header{background:linear-gradient(135deg,#2563EB 0%,#1D4ED8 100%);border-radius:var(--rlg);padding:18px;margin-bottom:16px;box-shadow:var(--sh2)}
+.summary-name{font-size:19px;font-weight:700;color:#fff}
+.summary-sub{font-size:13px;color:rgba(255,255,255,.75);margin-top:4px;line-height:1.6}
+.kpi-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.kpi{flex:1;min-width:70px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:var(--r);padding:10px 8px;text-align:center}
+.kpi-val{font-size:21px;font-weight:700;color:#fff}
+.kpi-val.danger{color:#FCA5A5}
+.kpi-val.warn{color:#FDE68A}
+.kpi-val.ok{color:#6EE7B7}
+.kpi-lbl{font-size:10px;color:rgba(255,255,255,.65);margin-top:2px;font-weight:500}
+.asa-reasons{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
+.tag{font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.2)}
+
+.sec-label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin:20px 0 9px;padding-left:2px}
+
+.alert-item{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;border-radius:var(--r);margin-bottom:7px;border:1px solid}
+.alert-item.alto{border-color:var(--red-border);background:var(--red-light)}
+.alert-item.medio{border-color:var(--amber-border);background:var(--amber-light)}
+.alert-tipo{font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;flex-shrink:0;margin-top:1px;white-space:nowrap}
+.alert-item.alto .alert-tipo{background:#FECACA;color:#7F1D1D}
+.alert-item.medio .alert-tipo{background:#FDE68A;color:#78350F}
+.alert-msg{font-size:13px;color:var(--text);line-height:1.45}
+
+.plan-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden;box-shadow:var(--sh)}
+.plan-cat{font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;padding:9px 14px;background:var(--blue-light);border-bottom:1px solid var(--border)}
+.plan-items{padding:10px 14px}
+.plan-item{font-size:13px;color:var(--text);padding:5px 0;display:flex;gap:9px;line-height:1.5;border-bottom:1px solid var(--border)}
+.plan-item:last-child{border-bottom:none}
+.plan-item::before{content:"›";color:var(--blue);font-weight:700;flex-shrink:0;font-size:16px;line-height:1.3}
+
+.rcri-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:16px;margin-bottom:14px;box-shadow:var(--sh)}
+.rcri-title{font-size:15px;font-weight:700;color:var(--text)}
+.rcri-sub{font-size:12px;color:var(--text2);margin-top:3px;margin-bottom:14px}
+.rcri-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.rcri-item{border:1.5px solid var(--border2);border-radius:var(--r);padding:11px;cursor:pointer;display:flex;align-items:flex-start;gap:9px;transition:all .12s;background:var(--surface)}
+.rcri-item:active{background:var(--surface2)}
+.rcri-item.on{border-color:var(--blue);background:var(--blue-light)}
+.rcri-item .cb-box{margin-top:1px}
+.rcri-label{font-size:12px;font-weight:600;color:var(--text);line-height:1.3}
+.rcri-desc{font-size:11px;color:var(--text2);margin-top:3px;line-height:1.4}
+.rcri-item.on .rcri-label{color:var(--blue)}
+
+.rcri-result{border:1.5px solid;border-radius:var(--r);padding:14px}
+.rcri-result.low{border-color:var(--green-border);background:var(--green-light)}
+.rcri-result.mod{border-color:var(--amber-border);background:var(--amber-light)}
+.rcri-result.high{border-color:var(--red-border);background:var(--red-light)}
+.rcri-res-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+.rcri-score-pill{font-size:26px;font-weight:700;padding:6px 20px;border-radius:30px}
+.rcri-result.low .rcri-score-pill{background:#A7F3D0;color:#064E3B}
+.rcri-result.mod .rcri-score-pill{background:#FDE68A;color:#78350F}
+.rcri-result.high .rcri-score-pill{background:#FECACA;color:#7F1D1D}
+.rcri-risk-label{font-size:17px;font-weight:700}
+.rcri-result.low .rcri-risk-label{color:var(--green)}
+.rcri-result.mod .rcri-risk-label{color:var(--amber)}
+.rcri-result.high .rcri-risk-label{color:var(--red)}
+.rcri-pct{font-size:12px;margin-top:3px;font-weight:500;color:inherit;opacity:.8}
+.rcri-divider{border:none;border-top:1px solid rgba(0,0,0,.08);margin:10px 0}
+.rcri-rec-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+.rcri-recs{display:flex;flex-direction:column;gap:5px}
+.rcri-rec{font-size:13px;color:var(--text);display:flex;gap:8px;line-height:1.4}
+.rcri-rec::before{content:"›";color:var(--blue);font-weight:700;flex-shrink:0}
+.rcri-active-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.rcri-atag{font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px;background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-mid)}
+.rcri-note{font-size:11px;color:var(--text3);margin-top:12px;line-height:1.6;padding-top:10px;border-top:1px solid var(--border);font-style:italic}
+
+@media print{
+  .topbar,.tabs,.btn-primary,.btn-outline,.btn-print{display:none!important}
+  body{background:white}
+  .section,.plan-block,.rcri-wrap{box-shadow:none!important}
+  .summary-header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+@media(max-width:480px){
+  .rcri-grid,.cb-grid{grid-template-columns:1fr}
+  .kpi-row{gap:6px}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">Rx</div>
+    <div><div class="logo-name">PreAnest</div><div class="logo-sub">Evaluación preanestésica · Bariátrica</div></div>
+  </div>
+  <div class="badges" id="top-badges"></div>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="setTab('form',this)">📝 Formulario</button>
+  <button class="tab" onclick="setTab('rcri',this)">❤️ Lee RCRI</button>
+  <button class="tab" onclick="setTab('res',this)">📊 Resumen & plan</button>
+</div>
+<div class="content" id="content"></div>
+<script>
+const S=[
+  {id:"datos",label:"Datos del paciente",icon:"👤",fields:[
+    {id:"nombre",label:"Nombre y Apellido",type:"text"},
+    {id:"edad",label:"Edad",type:"number",unit:"años"},
+    {id:"sexo",label:"Sexo",type:"select",options:["Masculino","Femenino","Otro"]},
+    {id:"peso",label:"Peso",type:"number",unit:"kg"},
+    {id:"talla",label:"Talla",type:"number",unit:"cm"},
+    {id:"cirugia",label:"Cirugía programada",type:"text"},
+    {id:"cirujano",label:"Cirujano",type:"text"},
+    {id:"fecha",label:"Fecha de cirugía",type:"date"}
+  ]},
+  {id:"ant",label:"Antecedentes patológicos",icon:"📋",fields:[
+    {id:"hta",label:"HTA",type:"cb"},{id:"dm2",label:"DBT tipo 2",type:"cb"},
+    {id:"sahos",label:"SAHOS / SAOS",type:"cb"},{id:"cpap",label:"Usa CPAP/BiPAP",type:"cb",dep:"sahos"},
+    {id:"cardio",label:"Cardiopatía",type:"cb"},{id:"cardio_det",label:"Detalle cardiopatía",type:"text",dep:"cardio"},
+    {id:"hipo",label:"Hipotiroidismo",type:"cb"},{id:"erge",label:"ERGE / Reflujo",type:"cb"},
+    {id:"acalasia",label:"Acalasia / Patología esofágica",type:"cb"},{id:"asma",label:"Asma / EPOC",type:"cb"},
+    {id:"hepatica",label:"Enfermedad hepática",type:"cb"},{id:"renal",label:"Enfermedad renal",type:"cb"},
+    {id:"trombo",label:"TEP / TVP previo",type:"cb"},{id:"otros",label:"Otros",type:"text"}
+  ]},
+  {id:"farm",label:"Farmacología",icon:"💊",fields:[
+    {id:"medicacion",label:"Medicación habitual",type:"textarea"},
+    {id:"anticoag",label:"Anticoagulantes / antiagregantes",type:"cb"},
+    {id:"anticoag_det",label:"¿Cuál? Última dosis",type:"text",dep:"anticoag"},
+    {id:"insulina",label:"Insulina",type:"cb"},{id:"aines",label:"AINEs crónicos",type:"cb"},
+    {id:"alergias",label:"Alergias / reacciones adversas",type:"textarea"}
+  ]},
+  {id:"va",label:"Vía aérea",icon:"🫁",fields:[
+    {id:"apertura",label:"Apertura oral",type:"select",options:[">3 cm","2-3 cm","<2 cm"]},
+    {id:"mallampati",label:"Mallampati",type:"select",options:["I","II","III","IV"]},
+    {id:"dtm",label:"Dist. tiromentoniana",type:"select",options:[">6.5 cm","6-6.5 cm","<6 cm"]},
+    {id:"cuello",label:"Movilidad cervical",type:"select",options:["Normal","Limitada"]},
+    {id:"circ_cuello",label:"Circunferencia de cuello",type:"number",unit:"cm"},
+    {id:"barba",label:"Barba / cicatrices faciales",type:"cb"},{id:"edentulo",label:"Edéntulo / prótesis",type:"cb"},
+    {id:"va_dif",label:"VA difícil previa documentada",type:"cb"},
+    {id:"va_dif_det",label:"Detalle VA difícil",type:"text",dep:"va_dif"}
+  ]},
+  {id:"cv",label:"Evaluación cardiorrespiratoria",icon:"❤️",fields:[
+    {id:"mets",label:"Capacidad funcional",type:"select",options:["≥4 METs (sube escalera, camina rápido)","1-4 METs (actividad ligera)","<1 MET (reposo o cama)"]},
+    {id:"disnea",label:"Disnea",type:"select",options:["No","Esfuerzo moderado","Mínimos esfuerzos","Reposo"]},
+    {id:"angor",label:"Angor / dolor precordial",type:"cb"},{id:"sincope",label:"Síncope / presíncope",type:"cb"},
+    {id:"ortopnea",label:"Ortopnea / DPN",type:"cb"},
+    {id:"ta",label:"TA",type:"text",placeholder:"ej: 130/80"},
+    {id:"fc",label:"FC",type:"number",unit:"lpm"},{id:"spo2",label:"SpO₂ basal",type:"number",unit:"%"},
+    {id:"ecg",label:"ECG preoperatorio",type:"select",options:["Normal","Alterado","No realizado"]},
+    {id:"ecg_det",label:"Detalle ECG",type:"text",dep:"ecg"},
+    {id:"eco",label:"Ecocardiograma",type:"select",options:["Normal","Alterado","No realizado"]}
+  ]},
+  {id:"lab",label:"Laboratorio",icon:"🔬",fields:[
+    {id:"hb",label:"Hemoglobina",type:"number",unit:"g/dL"},
+    {id:"plaquetas",label:"Plaquetas",type:"number",unit:"×10³/μL"},
+    {id:"rni",label:"RIN",type:"number"},
+    {id:"glucemia",label:"Glucemia",type:"number",unit:"mg/dL"},
+    {id:"hba1c",label:"HbA1c",type:"number",unit:"%"},
+    {id:"creatinina",label:"Creatinina",type:"number",unit:"mg/dL"},
+    {id:"k",label:"Potasio",type:"number",unit:"mEq/L"},
+    {id:"na",label:"Sodio",type:"number",unit:"mEq/L"},
+    {id:"alt",label:"TGP/ALT",type:"number",unit:"U/L"},
+    {id:"albumina",label:"Albúmina",type:"number",unit:"g/dL"}
+  ]},
+  {id:"ap",label:"Antecedentes anestésicos",icon:"💉",fields:[
+    {id:"anest_prev",label:"Anestesia previa",type:"cb"},
+    {id:"anest_compl",label:"Complicación anestésica previa",type:"cb"},
+    {id:"anest_compl_det",label:"Detalle complicación",type:"textarea",dep:"anest_compl"},
+    {id:"hm",label:"Historia familiar hipertermia maligna",type:"cb"},
+    {id:"nvpo",label:"NVPO previos",type:"cb"},{id:"cinetosis",label:"Cinetosis",type:"cb"},
+    {id:"tabaco",label:"Tabaquismo",type:"select",options:["No","Ex-fumador","Activo"]},
+    {id:"alcohol",label:"Alcohol / drogas",type:"cb"}
+  ]},
+  {id:"ind",label:"Indicaciones preoperatorias",icon:"📝",fields:[
+    {id:"ayuno_sol",label:"Ayuno sólidos",type:"select",options:["6 hs","8 hs","12 hs (indicación especial)"]},
+    {id:"ayuno_liq",label:"Ayuno líquidos claros",type:"select",options:["2 hs","4 hs"]},
+    {id:"metf_susp",label:"Suspender metformina",type:"cb"},
+    {id:"metf_cuando",label:"¿Con cuánta anticipación?",type:"select",options:["24 hs antes","48 hs antes"],dep:"metf_susp"},
+    {id:"anticoag_susp",label:"Suspender anticoagulante",type:"cb"},
+    {id:"med_cont",label:"Medicación a continuar el día de cirugía",type:"textarea"},
+    {id:"premedic",label:"Premedicación indicada",type:"textarea"}
+  ]}
+];
+const RI=[
+  {id:"r1",label:"Cirugía de alto riesgo",desc:"Intraabdominal, intratorácica o vascular suprainguinal"},
+  {id:"r2",label:"Cardiopatía isquémica",desc:"IAM previo, angor, nitratos, ondas Q, ergometría positiva"},
+  {id:"r3",label:"Insuficiencia cardíaca",desc:"Historia de IC, EAP, galope S3, infiltrados, DPN/ortopnea"},
+  {id:"r4",label:"Enf. cerebrovascular",desc:"ACV o AIT previo"},
+  {id:"r5",label:"DBT insulinodependiente",desc:"Insulina como tratamiento habitual"},
+  {id:"r6",label:"Creatinina >2.0 mg/dL",desc:"Insuficiencia renal preoperatoria"}
+];
+const RR={
+  0:{label:"Muy bajo",cls:"low",pct:"~0.4% riesgo MACE",recs:["Continuar con plan anestésico habitual","No requiere estudios cardíacos adicionales","Monitoreo estándar intraoperatorio"]},
+  1:{label:"Bajo",cls:"low",pct:"~1% riesgo MACE",recs:["ECG preoperatorio recomendable","No requiere estudios adicionales rutinarios","Monitoreo estándar"]},
+  2:{label:"Moderado",cls:"mod",pct:"~2.4% riesgo MACE",recs:["Considerar evaluación cardiológica preoperatoria","ECG preoperatorio obligatorio","Evaluar ecocardiograma","Optimizar HTA, DBT y FC preoperatoria"]},
+  3:{label:"Alto",cls:"high",pct:"~5.4% riesgo MACE — considerar diferir",recs:["Derivación cardiológica obligatoria","Ecocardiograma + prueba funcional","Evaluar coronariografía si angor inestable","Considerar monitoreo invasivo — línea arterial","Valorar riesgo/beneficio antes de proceder"]}
+};
+let D={},O={},RC={},tab="form";
+S.forEach(s=>O[s.id]=true);RI.forEach(i=>RC[i.id]=false);
+
+function imc(){const p=parseFloat(D.peso),t=parseFloat(D.talla);if(!p||!t)return null;return(p/Math.pow(t/100,2)).toFixed(1)}
+function asa(){
+  const b=parseFloat(imc());let sc=1;let rs=[];
+  if(b>=40){sc=Math.max(sc,3);rs.push("IMC ≥40")}else if(b>=30){sc=Math.max(sc,2);rs.push("IMC 30-39")}
+  if(D.dm2&&(parseFloat(D.hba1c)>9||parseFloat(D.glucemia)>300)){sc=Math.max(sc,3);rs.push("DBT descompensada")}
+  else if(D.dm2){sc=Math.max(sc,2);rs.push("DBT tipo 2")}
+  if(D.hta){sc=Math.max(sc,2);rs.push("HTA")}
+  if(D.cardio){sc=Math.max(sc,3);rs.push("Cardiopatía")}
+  if(D.sahos){sc=Math.max(sc,3);rs.push("SAHOS")}
+  if(D.trombo){sc=Math.max(sc,3);rs.push("TEP/TVP previo")}
+  if(D.renal){sc=Math.max(sc,3);rs.push("Enf. renal")}
+  if(D.hepatica){sc=Math.max(sc,3);rs.push("Enf. hepática")}
+  if(D.mets==="<1 MET (reposo o cama)"){sc=Math.max(sc,4);rs.push("<1 MET")}
+  if(D.ortopnea||D.sincope){sc=Math.max(sc,4);rs.push("Síntomas CV severos")}
+  return{sc,rs}
+}
+function alertas(){
+  const a=[];const b=parseFloat(imc());
+  if(D.mallampati==="III"||D.mallampati==="IV")a.push({t:"VA",n:"alto",m:"Mallampati "+D.mallampati+" — planificar VA difícil"});
+  if(D.va_dif)a.push({t:"VA",n:"alto",m:"VA difícil documentada previa"});
+  if(D.dtm==="<6 cm")a.push({t:"VA",n:"alto",m:"DTM <6 cm — laringoscopia difícil probable"});
+  if(b>=50)a.push({t:"VA",n:"alto",m:"IMC≥50 — videolaringoscopia de entrada"});
+  if(parseFloat(D.circ_cuello)>=40)a.push({t:"VA",n:"medio",m:"Cuello ≥40 cm — riesgo SAHOS/VA difícil"});
+  if(D.acalasia||D.erge)a.push({t:"VA",n:"alto",m:"ERGE/Acalasia — ISR obligatoria"});
+  if(D.mets==="<1 MET (reposo o cama)")a.push({t:"CV",n:"alto",m:"Cap. funcional <1 MET — alto riesgo"});
+  if(D.angor)a.push({t:"CV",n:"alto",m:"Angor activo — evaluar diferir"});
+  if(D.ortopnea)a.push({t:"CV",n:"alto",m:"Ortopnea/DPN — posible IC descompensada"});
+  if(parseFloat(D.fc)>100)a.push({t:"CV",n:"medio",m:"Taquicardia basal "+D.fc+" lpm"});
+  if(parseFloat(D.spo2)<92)a.push({t:"CV",n:"alto",m:"SpO₂ <92% — evaluar y optimizar"});
+  if(parseFloat(D.hb)<8)a.push({t:"Heme",n:"alto",m:"Hb "+D.hb+" g/dL — anemia severa"});
+  else if(parseFloat(D.hb)<10)a.push({t:"Heme",n:"medio",m:"Hb "+D.hb+" g/dL — anemia moderada"});
+  if(parseFloat(D.plaquetas)<100)a.push({t:"Heme",n:"alto",m:"Plaquetas <100K — riesgo hemorrágico"});
+  if(parseFloat(D.rni)>1.5)a.push({t:"Heme",n:"medio",m:"RIN "+D.rni+" — evaluar causa"});
+  if(D.anticoag)a.push({t:"Heme",n:"alto",m:"Anticoagulante — verificar última dosis y puente"});
+  if(parseFloat(D.glucemia)>200)a.push({t:"Meta",n:"alto",m:"Glucemia "+D.glucemia+" mg/dL"});
+  if(parseFloat(D.hba1c)>9)a.push({t:"Meta",n:"alto",m:"HbA1c "+D.hba1c+"% — mal control crónico"});
+  if(parseFloat(D.k)<3.5)a.push({t:"Meta",n:"medio",m:"K⁺ "+D.k+" mEq/L — hipopotasemia"});
+  if(parseFloat(D.k)>5.5)a.push({t:"Meta",n:"alto",m:"K⁺ "+D.k+" mEq/L — hiperpotasemia"});
+  if(parseFloat(D.creatinina)>1.5)a.push({t:"Meta",n:"medio",m:"Creatinina "+D.creatinina+" mg/dL"});
+  const ap=[D.sexo==="Femenino",D.nvpo||D.cinetosis,D.tabaco==="No",true].filter(Boolean).length;
+  if(ap>=3)a.push({t:"NVPO",n:"medio",m:"Apfel "+ap+"/4 — profilaxis multimodal"});
+  if(D.hm)a.push({t:"HM",n:"alto",m:"Hx familiar HM — evitar halogenados/succinilcolina"});
+  return a
+}
+function plan(){
+  const b=parseFloat(imc());const p=parseFloat(D.peso);const t=parseFloat(D.talla);const pl=[];
+  pl.push({c:"Técnica anestésica",i:["TIVA con TCI (propofol + remifentanilo)","BIS objetivo 40-60","Monitoreo TOF continuo"]});
+  const ind=["Preoxigenación en rampa (HELP position)","Posición semisentado 30°"];
+  if(D.erge||D.acalasia)ind.push("ISR obligatoria — rocuronio 1.2 mg/kg real");
+  else ind.push("Inducción estándar — rocuronio 0.6 mg/kg ideal");
+  if(b>=40||D.mallampati==="III"||D.mallampati==="IV"||D.va_dif){ind.push("Videolaringoscopia de primera línea");ind.push("Rescate: supraglótico + equipo cricotiroidotomía")}
+  pl.push({c:"Inducción / vía aérea",i:ind});
+  pl.push({c:"Mantenimiento",i:["Propofol TCI — modelo Marsh (peso ideal o ajustado)","Remifentanilo TCI — modelo Minto","Ventilación protectora: VT 6-8 mL/kg PBW, PEEP 8-10","FiO₂ mínima efectiva","Maniobras de reclutamiento si caída SpO₂","Capnografía continua"]});
+  const rv=["Sugammadex 200 mg — TOF T4/T1 ≥0.9","Extubación en semisentado"];
+  if(D.sahos)rv.push("SAHOS: vigilar 30 min antes de PACU");
+  rv.push(D.nvpo?"NVPO: ondansetrón + dexametasona + droperidol":"NVPO: ondansetrón + dexametasona profilácticos");
+  pl.push({c:"Reversión / egreso",i:rv});
+  pl.push({c:"Analgesia multimodal",i:["Ketamina 0.3 mg/kg ideal IV en inducción","Ketorolac 30 mg IV (verificar función renal)","Paracetamol 1g IV intraoperatorio","Dexmedetomidina 0.4-0.8 mcg/kg/h — SAHOS/opioides","Bloqueo TAP o cuadrado lumbar según acceso"]});
+  if(p&&t){
+    const d=t-152.4;const pi=D.sexo==="Femenino"?(45.5+0.91*d).toFixed(1):(50+0.91*d).toFixed(1);
+    const pa=(parseFloat(pi)+0.4*(p-parseFloat(pi))).toFixed(1);
+    pl.push({c:"Dosis calculadas",i:["Peso ideal Devine: "+pi+" kg","Peso ajustado: "+pa+" kg","Propofol 1.5 mg/kg PIB → "+(pi*1.5).toFixed(0)+" mg","Rocuronio 0.6 mg/kg PIB → "+(pi*0.6).toFixed(0)+" mg","Rocuronio ISR 1.2 mg/kg real → "+(p*1.2).toFixed(0)+" mg","Succinilcolina 1.5 mg/kg real → "+(p*1.5).toFixed(0)+" mg","Sugammadex → 200 mg"]})
+  }
+  return pl
+}
+function fld(f){
+  if(f.dep&&!D[f.dep])return"";
+  const v=D[f.id]||"";
+  if(f.type==="cb"){
+    const on=D[f.id];
+    return`<div class="cb-label${on?" checked":""}" onclick="sv('${f.id}',${!on})"><div class="cb-box${on?" checked":""}"><div class="cb-check"></div></div><span>${f.label}</span></div>`
+  }
+  if(f.type==="select")return`<div class="field"><label>${f.label}</label><select onchange="sv('${f.id}',this.value)"><option value="">— seleccionar —</option>${f.options.map(o=>`<option value="${o}"${v===o?" selected":""}>${o}</option>`).join("")}</select></div>`;
+  if(f.type==="textarea")return`<div class="field"><label>${f.label}</label><textarea oninput="st('${f.id}',this.value)">${v}</textarea></div>`;
+  return`<div class="field"><label>${f.label}${f.unit?` <span class="field-unit">(${f.unit})</span>`:""}</label><input type="${f.type==="number"?"number":f.type==="date"?"date":"text"}" value="${v}" placeholder="${f.placeholder||""}" oninput="st('${f.id}',${f.type==="number"?"parseFloat(this.value)||''":'this.value'})"/></div>`
+}
+function badges(){
+  const v=imc();const{sc,rs}=asa();const al=alertas();const hi=al.filter(a=>a.n==="alto").length;
+  let h="";
+  if(v)h+=`<span class="badge ${parseFloat(v)>=40?"danger":parseFloat(v)>=30?"warn":"ok"}">IMC ${v}</span>`;
+  if(sc>1)h+=`<span class="badge ${sc>=4?"danger":sc===3?"warn":"ok"}">ASA ${sc}</span>`;
+  if(hi>0)h+=`<span class="badge danger">⚠ ${hi} alerta${hi>1?"s":""}</span>`;
+  document.getElementById("top-badges").innerHTML=h
+}
+function rForm(){
+  let h="";
+  S.forEach(s=>{
+    const cb=s.fields.filter(f=>f.type==="cb"&&(!f.dep||D[f.dep]));
+    const ot=s.fields.filter(f=>f.type!=="cb");
+    h+=`<div class="section"><div class="sec-head" onclick="ts('${s.id}')"><div class="sec-title"><span class="sec-icon">${s.icon}</span>${s.label}</div><div class="chev${O[s.id]?" open":""}">▼</div></div>`;
+    if(O[s.id]){h+=`<div class="sec-body">`;ot.forEach(f=>h+=fld(f));if(cb.length){h+=`<div class="cb-grid">`;cb.forEach(f=>h+=fld(f));h+=`</div>`}h+=`</div>`}
+    h+=`</div>`
+  });
+  return h+`<button class="btn-primary" onclick="setTab('res',null)">Ver resumen y plan anestésico →</button>`
+}
+function rRCRI(){
+  const sc=RI.filter(i=>RC[i.id]).length;const r=RR[Math.min(sc,3)];const ac=RI.filter(i=>RC[i.id]);
+  let h=`<div class="rcri-wrap"><div class="rcri-title">Revised Cardiac Risk Index (Lee 1999)</div><div class="rcri-sub">Riesgo de complicación cardíaca mayor perioperatoria (MACE)</div><div class="rcri-grid">`;
+  RI.forEach(it=>{h+=`<div class="rcri-item${RC[it.id]?" on":""}" onclick="tr('${it.id}')"><div class="cb-box${RC[it.id]?" checked":""}"><div class="cb-check"></div></div><div><div class="rcri-label">${it.label}</div><div class="rcri-desc">${it.desc}</div></div></div>`});
+  h+=`</div><div class="rcri-result ${r.cls}"><div class="rcri-res-top"><div><div class="rcri-risk-label">Riesgo ${r.label}</div><div class="rcri-pct">${r.pct}</div></div><div class="rcri-score-pill">${sc}/6</div></div>`;
+  if(ac.length)h+=`<div class="rcri-active-tags">${ac.map(a=>`<span class="rcri-atag">${a.label}</span>`).join("")}</div>`;
+  h+=`<hr class="rcri-divider"/><div class="rcri-rec-title">Recomendaciones</div><div class="rcri-recs">${r.recs.map(rec=>`<div class="rcri-rec">${rec}</div>`).join("")}</div></div><p class="rcri-note">Validado en cirugía no cardíaca general. En bariátrica, el riesgo puede subestimarse si hay cardiopatía subclínica por sedentarismo extremo.</p></div>`;
+  return h
+}
+function rRes(){
+  const v=imc();const{sc,rs}=asa();const al=alertas();const pl=plan();
+  const rsc=RI.filter(i=>RC[i.id]).length;
+  const aC=sc>=4?"danger":sc===3?"warn":"ok";
+  const iC=v?(parseFloat(v)>=40?"danger":parseFloat(v)>=30?"warn":"ok"):"ok";
+  const alC=al.filter(a=>a.n==="alto").length>0?"danger":"ok";
+  const rC=rsc>=3?"danger":rsc>=2?"warn":"ok";
+  let h=`<div class="btn-print"><button onclick="window.print()">🖨️ Imprimir / PDF</button></div>`;
+  h+=`<div class="summary-header"><div class="summary-name">${D.nombre||"Paciente sin nombre"}</div><div class="summary-sub">${D.edad?D.edad+" años":""}${D.sexo?" · "+D.sexo:""}${D.cirugia?" · "+D.cirugia:""}${D.cirujano?"<br>Cirujano: "+D.cirujano:""}${D.fecha?"<br>Fecha: "+D.fecha:""}</div><div class="kpi-row">${v?`<div class="kpi"><div class="kpi-val ${iC}">${v}</div><div class="kpi-lbl">IMC kg/m²</div></div>`:""}<div class="kpi"><div class="kpi-val ${aC}">ASA ${sc}</div><div class="kpi-lbl">Clasificación</div></div><div class="kpi"><div class="kpi-val ${alC}">${al.filter(a=>a.n==="alto").length}</div><div class="kpi-lbl">Alertas</div></div><div class="kpi"><div class="kpi-val ${rC}">${rsc}/6</div><div class="kpi-lbl">Lee RCRI</div></div></div>${rs.length?`<div class="asa-reasons">${rs.map(r=>`<span class="tag">${r}</span>`).join("")}</div>`:""}</div>`;
+  if(al.length){h+=`<div class="sec-label">Alertas y banderas rojas</div>`;al.forEach(a=>{h+=`<div class="alert-item ${a.n}"><span class="alert-tipo">${a.t}</span><span class="alert-msg">${a.m}</span></div>`})}
+  h+=`<div class="sec-label">Plan anestésico sugerido</div>`;
+  pl.forEach(p=>{h+=`<div class="plan-block"><div class="plan-cat">${p.c}</div><div class="plan-items">${p.i.map(x=>`<div class="plan-item">${x}</div>`).join("")}</div></div>`});
+  return h+`<button class="btn-outline" onclick="setTab('form',null)">← Volver al formulario</button>`
+}
+function st(id,v){D[id]=v;badges()}
+function sv(id,v){D[id]=v;render()}
+function ts(id){O[id]=!O[id];render()}
+function tr(id){RC[id]=!RC[id];render()}
+function setTab(t,el){
+  tab=t;
+  document.querySelectorAll(".tab").forEach((b,i)=>b.classList.toggle("active",["form","rcri","res"][i]===t));
+  render()
+}
+function render(){
+  badges();
+  const el=document.getElementById("content");
+  el.innerHTML=tab==="form"?rForm():tab==="rcri"?rRCRI():rRes()
+}
+render();
+</script>
+</body>
+</html>
